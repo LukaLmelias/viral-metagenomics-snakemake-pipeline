@@ -22,7 +22,7 @@ scripts/slurm_logs
 scripts/slurm-*
 
 viral_metagenomics_pipeline.code-workspace
-
+supplimentary_data/
 run_sourmash_index.sh
 index_sourmash.smk
 
