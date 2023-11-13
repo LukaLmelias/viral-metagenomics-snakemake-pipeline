@@ -1,0 +1,155 @@
+
+# config for directories
+directories:
+    raw_reads: /lustre/shared/wfsr-mcfa/projects/internships/luka/viral_metagenomics_pipeline/raw_data/oester_select/
+    results: /lustre/shared/wfsr-mcfa/projects/internships/luka/viral_metagenomics_pipeline/results/
+    
+
+# Parameters
+fastp_params:
+    window_size: 20
+    mean_qual: 20
+    trim_tail: 1
+    min_len: 55
+    threads: 16
+    time: 30
+    mem-per-cpu: 4000
+    mem_mb: 8000 
+
+
+haploflow_params:
+    threads: 16
+    time: 20
+    mem-per-cpu: 8000
+    mem_mb: 10000
+    cpus_per_task: 16
+
+
+kraken2_params:
+    time: 60   
+    threads: 20
+    mem_per_cpu: 8000
+    mem_mb: 70000
+    db: /lustre/shared/wfsr-mcfa/projects/viral-metagenomics/databases/kraken2_custom_unmasked
+
+
+metaviraspades_params:
+    threads: 32
+    mem_per_cpu: 8000
+    mem_mb: 20000
+    time: 720
+    kmer: [21,33,55,77,99,127]
+
+metaquast_params:
+    threads: 8
+    mem_per_cpu: 8000
+    mem_mb: 8000
+    time: 10
+    reference_db: /lustre/shared/wfsr-mcfa/projects/viral-metagenomics/databases/blast_virus/
+    maxRefNum: 0
+    minContig: 300
+
+
+
+
+
+metabat2_params:
+    threads: 16
+    mem_per_cpu: 8000
+    mem_mb: 8000
+    time: 20
+    MinContig: 1500
+    minBinSize: 1500
+    percentGoodContig: 80
+
+deepvirfinder_params:
+    threads: 16
+    mem_per_cpu: 8000
+    mem_mb: 8000
+    time: 30
+    score_cutoff: 0.95
+    pval_cutoff: 0.05
+    deepVirFinderScript: "/lustre/shared/wfsr-mcfa/projects/internships/luka/viral_metagenomics_pipeline/tools/DeepVirFinder/dvf.py"
+    modelsDir: "/lustre/shared/wfsr-mcfa/projects/internships/luka/viral_metagenomics_pipeline/tools/DeepVirFinder/models"
+
+
+krakentools_params:
+    threads: 16
+    mem_per_cpu: 8000
+    mem_mb: 8000
+    time: 120
+    TAXID: 29159 # exclude host
+    includeParents: True
+    includeChildren: True
+
+
+checkv_params:
+    checkvMode: "end_to_end"
+    checkvDb: "/lustre/shared/wfsr-mcfa/projects/internships/luka/viral_metagenomics_pipeline/results/checkv/checkv-db-v1.5"
+    threads: 16
+    mem_mb: 8000
+    runtime: 30
+    completeness_cutoff: 50
+    downloadDB: True
+
+genomad_params:
+    genomadMode: "end-to-end"
+    genomadDb: "/lustre/shared/wfsr-mcfa/projects/internships/luka/viral_metagenomics_pipeline/Oesters_results/genomad/genomad_db"
+    threads: 20
+    mem_mb: 20000
+    runtime: 360
+    downloadDB: True
+
+
+vamb_params:
+    mem_mb: 20000
+    runtime: 360
+    threads: 20
+    minfasta: 1000
+    initial_batch_size: 128
+    min_seq_len: 100 
+    
+
+
+blast_params:
+    mem_mb: 16000
+    runtime: 120
+    db: /lustre/shared/wfsr-databases/BLASTdb/nt
+    taxid_db: /lustre/shared/wfsr-databases/BLASTdb
+    threads: 20
+    max_target_seqs: 10
+
+
+
+minimap2_params:
+    mem_mb: 8000
+    runtime: 30
+    threads: 16
+
+samtools_params:
+    mem_mb: 20000
+    runtime: 30
+    threads: 16
+
+
+
+# conda envs
+conda:
+    fastp_conda: "/lustre/shared/wfsr-mcfa/projects/internships/luka/viral_metagenomics_pipeline/tools/yamls/fastp.yml"
+    haploflow_conda: "/lustre/shared/wfsr-mcfa/projects/internships/luka/viral_metagenomics_pipeline/tools/yamls/haploflow.yml"
+    kraken2_conda: "/lustre/shared/wfsr-mcfa/projects/internships/luka/viral_metagenomics_pipeline/tools/yamls/kraken2.yml"
+    multiqc_conda: "/lustre/shared/wfsr-mcfa/projects/internships/luka/viral_metagenomics_pipeline/tools/yamls/multiqc.yml"
+    metaviralspades_conda: "/lustre/shared/wfsr-mcfa/projects/internships/luka/viral_metagenomics_pipeline/tools/yamls/spades.yml"
+    metaquast_conda: "/lustre/shared/wfsr-mcfa/projects/internships/luka/viral_metagenomics_pipeline/tools/yamls/quast.yml"
+    metabat2_conda: "/lustre/shared/wfsr-mcfa/projects/internships/luka/viral_metagenomics_pipeline/tools/yamls/metabat2.yml"
+    deepvirfinder_conda: "/lustre/shared/wfsr-mcfa/projects/internships/luka/viral_metagenomics_pipeline/tools/yamls/deepvirfinder.yml"
+    krakentools_conda: "/lustre/shared/wfsr-mcfa/projects/internships/luka/viral_metagenomics_pipeline/tools/yamls/krakentools.yml"
+    genomad_conda: "/lustre/shared/wfsr-mcfa/projects/internships/luka/viral_metagenomics_pipeline/tools/yamls/genomad.yml"
+    checkv_conda: "/lustre/shared/wfsr-mcfa/projects/internships/luka/viral_metagenomics_pipeline/tools/yamls/checkv.yml"
+    blast_conda: "/lustre/shared/wfsr-mcfa/projects/internships/luka/viral_metagenomics_pipeline/tools/yamls/blast.yml"
+    vamb_conda: "/lustre/shared/wfsr-mcfa/projects/internships/luka/viral_metagenomics_pipeline/tools/yamls/vamb.yml"
+    minimap2_conda: "/lustre/shared/wfsr-mcfa/projects/internships/luka/viral_metagenomics_pipeline/tools/yamls/minimap2.yml"
+    samtools_conda: "/lustre/shared/wfsr-mcfa/projects/internships/luka/viral_metagenomics_pipeline/tools/yamls/samtools.yml"
+    seqtk_conda: "/lustre/shared/wfsr-mcfa/projects/internships/luka/viral_metagenomics_pipeline/tools/yamls/seqtk.yml"
+
+

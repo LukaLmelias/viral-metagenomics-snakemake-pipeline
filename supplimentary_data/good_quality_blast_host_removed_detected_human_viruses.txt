@@ -1,0 +1,3 @@
+	contig name	taxid	sacc	sscinames	sblastnames	evalue	bitscore	pident	sample
+22	NODE_33_length_1738_cov_11.656735	743300	NC_038392	Human stool-associated circular virus NG13	viruses	3.05e-05	65.8	100.0	HCFKNDSX3_104762-001-002_57_ATTATCAA-GAGAGTCG_L004
+69	NODE_164_length_1860_cov_96.292556	743300	NC_038392	Human stool-associated circular virus NG13	viruses	3.27e-05	65.8	100.0	H7NKYDSX3_104762-001-003_31_TCGCCTTG-GAATCAGC_L001

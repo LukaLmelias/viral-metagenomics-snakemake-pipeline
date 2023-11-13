@@ -1,0 +1,16 @@
+name: minimap2
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - _libgcc_mutex=0.1=conda_forge
+  - _openmp_mutex=4.5=2_gnu
+  - k8=0.2.5=hdcf5f25_4
+  - libgcc-ng=13.1.0=he5830b7_0
+  - libgomp=13.1.0=he5830b7_0
+  - libstdcxx-ng=13.1.0=hfd8a6a1_0
+  - libzlib=1.2.13=hd590300_5
+  - minimap2=2.26=he4a0461_1
+  - zlib=1.2.13=hd590300_5
+prefix: /lustre/shared/wfsr-mcfa/projects/internships/luka/viral_metagenomics_pipeline/tools/miniconda3/envs/minimap2

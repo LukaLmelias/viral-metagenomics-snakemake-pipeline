@@ -1,0 +1,5 @@
+{
+    "SBATCH_DEFAULTS": "",
+    "CLUSTER_NAME": "",
+    "CLUSTER_CONFIG": "/lustre/shared/wfsr-mcfa/projects/internships/luka/viral_metagenomics_pipeline/configs/slurm_defaults.yaml"
+}

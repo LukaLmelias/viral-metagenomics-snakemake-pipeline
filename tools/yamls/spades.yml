@@ -1,0 +1,37 @@
+name: spades
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - _libgcc_mutex=0.1=conda_forge
+  - _openmp_mutex=4.5=2_gnu
+  - _sysroot_linux-64_curr_repodata_hack=3=h69a702a_13
+  - bzip2=1.0.8=h7f98852_4
+  - ca-certificates=2023.5.7=hbcca054_0
+  - kernel-headers_linux-64=3.10.0=h4a8ded7_13
+  - ld_impl_linux-64=2.40=h41732ed_0
+  - libexpat=2.5.0=hcb278e6_1
+  - libffi=3.4.2=h7f98852_5
+  - libgcc-ng=12.2.0=h65d4601_19
+  - libgomp=12.2.0=h65d4601_19
+  - libnsl=2.0.0=h7f98852_0
+  - libsqlite=3.41.2=h2797004_1
+  - libstdcxx-ng=12.2.0=h46fd767_19
+  - libuuid=2.38.1=h0b41bf4_0
+  - libzlib=1.2.13=h166bdaf_4
+  - llvm-openmp=8.0.1=hc9558a2_0
+  - ncurses=6.3=h27087fc_1
+  - openmp=8.0.1=0
+  - openssl=3.1.0=hd590300_3
+  - pip=23.1.2=pyhd8ed1ab_0
+  - python=3.11.3=h2755cc3_0_cpython
+  - readline=8.2=h8228510_1
+  - setuptools=67.7.2=pyhd8ed1ab_0
+  - spades=3.15.5=h95f258a_1
+  - sysroot_linux-64=2.17=h4a8ded7_13
+  - tk=8.6.12=h27826a3_0
+  - tzdata=2023c=h71feb2d_0
+  - wheel=0.40.0=pyhd8ed1ab_0
+  - xz=5.2.6=h166bdaf_0
+prefix: /lustre/shared/wfsr-mcfa/projects/internships/luka/tools/miniconda3/envs/spades

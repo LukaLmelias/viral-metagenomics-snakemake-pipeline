@@ -1,0 +1,186 @@
+
+import os
+#from itertools import zip_longest
+from snakemake.logging import logger
+import re
+import glob
+
+# include some python scripts
+include: './helpers.py'
+
+# configs
+configfile: "/lustre/shared/wfsr-mcfa/projects/internships/luka/viral_metagenomics_pipeline/configs/sourmash_config.yaml"
+configfile: "/lustre/shared/wfsr-mcfa/projects/internships/luka/viral_metagenomics_pipeline/configs/config.yaml"
+
+
+# extract the path to the raw reads from the config file.
+raw_reads_path  = config["directories"]["raw_reads"]
+
+#set the results/output directory
+results_dir = config["directories"]["results"]
+
+# results directiry per tool
+fastp_dir = os.path.join(results_dir, "fastp")
+kraken2_dir = os.path.join(results_dir, "kraken2")
+krakentools_dir = os.path.join(results_dir, "krakentools")
+metaspades_dir = os.path.join(results_dir, "metaspades")
+checkv_dir = os.path.join(results_dir, "checkv")
+metabat2_dir = os.path.join(results_dir, "metabat2")
+vamb_dir = os.path.join(results_dir, "vamb", "host_removed")
+blast_dir = os.path.join(results_dir, "blast")
+genomad_dir = os.path.join(results_dir, "genomad")
+
+#metaquast_dir = os.path.join(results_dir, "metaquast") #checkv used instead
+#deepvirfinder_dir = os.path.join(results_dir, "deepvirfinder") #geNomad used instead
+
+###########################################################################################################
+### START OF SOURMASH SETTINGS (adopted from: https://github.com/PacificBiosciences/pb-metagenomics-tools)
+##########################################################################################################
+out_dir = os.path.join(results_dir, 'sourmash',"with-ncbi", "good_quality_scaled_100","output.sourmash-profiling")
+logs_dir = os.path.join(results_dir, 'sourmash',"with-ncbi","good_quality_scaled_100","logs")
+benchmarks_dir = os.path.join(results_dir, 'sourmash',"with-ncbi","good_quality_scaled_100","benchmarks")
+
+sourmash_params = config['sourmash']
+search_databases = sourmash_params['search_databases'] # must be dictionary
+ksize = sourmash_params.get("ksize", [31])
+if not isinstance(ksize, list):
+    ksize=[ksize]
+for k in ksize:
+    k_str = f"k{k}"
+    if k_str not in search_databases.keys():
+        raise ValueError(f"Database not specified for search ksize {k_str}. Please specify databases in `config.yaml` file.")
+        sys.exit(-1)
+##########################################################################################################
+### END OF SOURMASH SETTINGS
+##########################################################################################################
+
+# metaviralspades_dir = config['directories']['metaviralspades_results']
+# metaquast_dir = config["directories"]["metaquast_results"]
+# deepvirfinder_dir = config["directories"]["deepvirfinder_results"]
+
+
+
+
+# constract the base names for the wildcards
+SAMPLES,  EXTENSION = glob_wildcards(os.path.join(raw_reads_path, '{sample}_{extension}'))
+
+# take unique parts of the elements
+SAMPLES = list(set(SAMPLES))
+
+forward_extension, reverse_extension = sorted(list(set(EXTENSION)), reverse=False)
+
+# print outs to check that paths are correctly picked up
+logger.info(f"Path to the raw reads: {raw_reads_path}")
+logger.info(f"Fisrt sample base name: {SAMPLES[0]}")
+logger.info(f"Foward read extention: {forward_extension}")
+logger.info(f"Reverse read extention: {reverse_extension}")
+
+# logger.info(fastp_dir)
+# logger.info(krakentools_dir)
+
+
+# king of rules :)
+
+rule all:
+    input:        
+        #raw reads
+        expand(os.path.join(f"{raw_reads_path}",f"{{sample}}_{{forward_extension}}"), sample=SAMPLES, forward_extension=forward_extension),
+        expand(os.path.join(f"{raw_reads_path}",f"{{sample}}_{{reverse_extension}}"), sample=SAMPLES, reverse_extension=reverse_extension), 
+
+        #fastp outputs
+        expand(os.path.join(f'{fastp_dir}', 'qc_reads', f'{{sample}}_R1.qc.fastq.gz'),sample=SAMPLES),
+        expand(os.path.join(f'{fastp_dir}', 'qc_reads', f'{{sample}}_R2.qc.fastq.gz'), sample=SAMPLES),
+        expand(os.path.join(f'{fastp_dir}', 'htmls', f'{{sample}}.html'), sample=SAMPLES),
+        expand(os.path.join(f'{fastp_dir}', 'jsons', f'{{sample}}-fastp.json'), sample=SAMPLES),
+        
+        # multiqc on fastp
+        os.path.join(f'{fastp_dir}', 'multiqc_reports','multiqc_data'),
+
+    #     # haploflow outputs
+    #     #'/lustre/shared/wfsr-mcfa/projects/internships/luka/viral_metagenomics_pipeline/Oesters_results/haploflow',
+
+       # kraken2 output
+        expand(os.path.join(f'{kraken2_dir}', 'results', f'{{sample}}.kraken2_report'), sample=SAMPLES),        
+        expand(os.path.join(f'{kraken2_dir}', 'results', f'{{sample}}.kraken2_out'),sample=SAMPLES ),        
+        os.path.join(f'{kraken2_dir}' , 'multiqc_reports', 'multiqc_data'),
+        
+      
+        #krakentools
+        expand(os.path.join(f"{krakentools_dir}", 'host_removed_extractedReads', f"{{sample}}_extracted_R1.fasta"), sample=SAMPLES),
+        expand(os.path.join(f"{krakentools_dir}", 'host_removed_extractedReads', f"{{sample}}_extracted_R2.fasta"), sample=SAMPLES),
+        
+        
+
+   
+    #     #metaviralspades output
+        expand(os.path.join(f"{metaspades_dir}","host_removed", "{sample}", "contigs.fasta"), sample=SAMPLES),
+
+    #     #"/lustre/shared/wfsr-mcfa/projects/internships/luka/viral_metagenomics_pipeline/Oesters_results/metaspades/contigs.fasta"
+
+
+        # metaquast
+        #expand(os.path.join(f"{metaquast_dir}", "{sample}","report.html"), sample=SAMPLES),
+
+        #metabat2
+        #expand(os.path.join(f"{metabat2_dir}", "{sample}"),sample=SAMPLES),
+        expand(os.path.join(f"{metabat2_dir}", "host_removed_checkv_filtered","{sample}"),sample=SAMPLES),
+
+        #genomad
+        os.path.join(genomad_dir, 'genomad_db'),        
+        expand(os.path.join(f"{genomad_dir}", "host_removed", "none_checkv_filtered", "{sample}","contigs_summary", "contigs_virus.fna"), sample=SAMPLES),
+        
+
+        #checkv
+        expand(os.path.join(f"{checkv_dir}", "host_removed","{sample}", "quality_summary.tsv"), sample=SAMPLES),
+        #checv  selected nodes
+        expand(os.path.join(f"{checkv_dir}", "host_removed", "{sample}", "checkv_medium_to_high_nodes.txt"), sample=SAMPLES),
+        expand(os.path.join(f"{checkv_dir}", "host_removed", "{sample}", "checkv_medium_to_high_contigs.fasta"), sample=SAMPLES),
+        
+        #deepvirfinder
+        #os.path.join(f"{deepvirfinder_dir}", "allContigsk127.fasta._gt1bp_dvfpred.txt" ),
+
+        #VAMB
+            #concat
+        os.path.join(vamb_dir,  "allContigsK127.fasta"),
+        os.path.join(vamb_dir,  "allContigsK127_sample_ids.tsv"),
+            #index
+        os.path.join(vamb_dir, "allContigsK127.mmi"),
+            #samtools
+        expand(os.path.join(vamb_dir, f"allContigsK127_{{sample}}.bam"), sample=SAMPLES),
+            #vamb
+        os.path.join(vamb_dir, "bin_size1000", "clusters.tsv"),
+
+        #blast
+        expand(os.path.join(f"{blast_dir}", "host_removed", "{sample}", "blastn_search.tsv"), sample=SAMPLES),
+
+        #sourmash
+        expand(os.path.join(out_dir, '2-gather', '{sample}.k{ks}.gather.with-lineages.csv'),sample=SAMPLES, ks=ksize),
+        expand(os.path.join(out_dir, '3-taxprofile', '{sample}.k{ks}.gather.genbank.kreport.txt'), sample=SAMPLES, ks=ksize),
+        expand(os.path.join(sourmash_params['ncbi_db'], 'ncbi-all-viruses-2023-08-k{ks}.sig'), ks=ksize),
+        expand(os.path.join(sourmash_params['ncbi_db'], 'ncbi-all-viruses-2023-08-k{ks}.sbt.zip'),ks=ksize),
+        
+        # if vamb output is blasted
+        # expand(os.path.join(f"{blast_dir}", "bin_size1000", "{bin_id}_blast_out.tsv"),\
+        # bin_id=[x.split(".")[0] for x in os.listdir(os.path.join(vamb_dir, "bin_size1000", "bins"))])
+        
+
+#include rules:
+include: './fastp.smk'
+include: "./kraken2.smk"
+include: "./krakentools.smk"
+include: "./metaspades.smk"
+include: "./metabat2.smk"
+include: "./genomad.smk"
+include: "./checkv.smk"
+include: "./vamb.smk"
+include:"./blast.smk"
+include: "./sourmash.smk"
+
+
+###########################
+### well working but discontinued
+###########################
+# #include: "./haploflow.smk"
+#include: "./metaquast.smk"
+#include: "./deepvirfinder.smk"
+

@@ -1,0 +1,23 @@
+
+# SLURM configuration
+__default__ :
+        #ntasks: 16
+        cpus-per-task: '{threads}'
+        mem: 8000        
+        time: 60
+        #nodes: "1"
+        qos: 'std'
+        output: './slurm_logs/oesters_slurm_logs/{rule}/{wildcards}.out'  
+        error: './slurm_logs/oesters_slurm_logs/{rule}/{wildcards}.err'  
+        job-name: '{rule}'
+        tmp: '100'
+        mail-type: 'FAIL' 
+        mail-user: 'lenarotoluka.lmelias@wur.nl'      # change to your email 
+        
+        
+       
+        
+
+     
+
+
